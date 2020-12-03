@@ -1,0 +1,63 @@
+---
+- hosts: all
+  tasks:
+
+    - name: Create alumno 
+      become: yes
+      user:
+        name: alumno
+        password: '$6$ZHtvX5bbrhayT$vfIJk64WpXSBJ1mkptT5Lk7yNYvOChoaffmVUfcs4vvUopb4MCITiV9gF7y64RSX9INQn87VXb2pV0.1ODMkx0' 
+        groups: sudo
+        state: present
+
+    - name: Run dist-upgrade
+      apt:
+          upgrade: dist
+          update_cache: yes
+      become: yes
+    - name: Install lamp stack
+      become: yes
+      apt: 
+        pkg:
+         - apache2
+         - mysql-server
+         - php7.4
+         - php7.4-mysql
+         - php-dev
+         - build-essential 
+         - php-pear 
+
+    - name: Install pear package xdebug
+      community.general.pear:
+        name: pecl/xdebug 
+        state: present
+      become: yes
+
+    - name: Insert lines on /etc/php/7.4/cli/php.ini 
+      blockinfile:
+        path: /etc/php/7.4/cli/php.ini
+        block: |
+          zend_extension=/usr/lib/php/20190902/xdebug.so
+          xdebug.remote_enable = true 
+          xdebug.remote_autostart = true 
+      become: yes
+
+    - name: Insert lines on /etc/php/7.4/apache2/php.ini 
+      blockinfile:
+        path: /etc/php/7.4/apache2/php.ini
+        block: |
+          zend_extension=/usr/lib/php/20190902/xdebug.so
+          xdebug.mode = debug
+          #xdebug.start_with_request = yes
+          #xdebug.remote_port = 9000 
+          xdebug.client_host = 10.0.2.2
+          xdebug.max_nesting_level= 512 
+      become: yes
+
+    - name: Start services
+      service: name={{ item }} state=started enabled=yes
+      become: yes
+      with_items:
+        - apache2
+        - mysql
+...
