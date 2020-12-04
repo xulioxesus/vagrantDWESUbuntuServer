@@ -48,8 +48,7 @@
         block: |
           zend_extension=/usr/lib/php/20190902/xdebug.so
           xdebug.mode = debug
-          #xdebug.start_with_request = yes
-          #xdebug.remote_port = 9000 
+          xdebug.start_with_request = yes
           xdebug.client_host = 10.0.2.2
           xdebug.max_nesting_level= 512 
       become: yes
