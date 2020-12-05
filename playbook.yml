@@ -27,11 +27,19 @@
          - build-essential 
          - php-pear 
 
-    - name: Install pear package xdebug
-      community.general.pear:
-        name: pecl/xdebug 
+    # Para la versión 2.10 de ansible    
+    # - name: Install pear package xdebug
+    #   community.general.pear:
+    #     name: pecl/xdebug 
+    #     state: present
+    #   become: yes
+
+    # Para la versión 2.9 de ansible
+    - pear:
+        name: pecl/xdebug
         state: present
       become: yes
+    # Fin del bloque para la versión 2.9
 
     - name: Insert lines on /etc/php/7.4/cli/php.ini 
       blockinfile:
